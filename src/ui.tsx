@@ -1,12 +1,12 @@
 import '!./output.css'
 
+import type {CreateUnitsHandler, PluginData, Snabled} from './types'
+
 import {h, Fragment} from 'preact'
 import {useCallback, useState} from 'preact/hooks'
 
-import {Button, Columns, Container, Muted, render, Text, TextboxMultiline, VerticalSpace} from '@create-figma-plugin/ui'
+import {Button, render, Text, Muted, TextboxMultiline, useInitialFocus, Link} from '@create-figma-plugin/ui'
 import {emit} from '@create-figma-plugin/utilities'
-
-import {CloseHandler, CreateUnitsHandler, PluginData} from './types'
 
 function Plugin() {
   const [jsonData, setJsonData] = useState<string>('')
@@ -14,6 +14,7 @@ function Plugin() {
   const [error, setError] = useState<string>('')
   const [report, setReport] = useState<{
     version: string
+    snabled: Snabled
     colorsCount: number
     // Подготовлено для будущего расширения
     fontsCount?: number
@@ -24,13 +25,14 @@ function Plugin() {
     try {
       const data = JSON.parse(text)
       if (!data.version || !data.units) {
-        setError('Неверный формат JSON: отсутствуют обязательные поля version или units')
+        setError('Неверный формат JSON: отсутствуют обязательные поля')
         setReport(null)
         return false
       }
 
       setReport({
         version: data.version,
+        snabled: data.snabled,
         colorsCount: data.units.colors?.length || 0,
         // Подготовлено для будущего расширения
         fontsCount: data.units.fonts?.length || 0,
@@ -62,48 +64,39 @@ function Plugin() {
   )
 
   return (
-    <Container space="small">
-      <VerticalSpace space="medium" />
+    <main className="px-3 pt-3.5 py-3 flex flex-col justify-between h-full gap-3">
+      <section className="space-y-3.5">
+        <Text>
+          <Muted>
+            Paste copied data from{' '}
+            <Link href="https://snable.website/store" target="_blank">
+              Snable Extension
+            </Link>
+          </Muted>
+        </Text>
 
-      <Text>
-        <Muted>Вставьте скопированный код</Muted>
-      </Text>
+        <TextboxMultiline {...useInitialFocus()} rows={5} onValueInput={handleTextInput} value={jsonData} placeholder="{ ... }" />
 
-      <VerticalSpace space="small" />
+        {error && <Text className="text-red-500 leading-none">{error}</Text>}
 
-      <TextboxMultiline onValueInput={handleTextInput} value={jsonData} placeholder="Вставьте код" rows={5} />
+        {report && (
+          <div className="space-y-1.5">
+            <div className="text-lg font-medium">{report.snabled.title}</div>
 
-      {error && (
-        <Fragment>
-          <VerticalSpace space="small" />
-          <Text style={{color: 'red'}}>{error}</Text>
-        </Fragment>
-      )}
+            <Text>
+              <Muted>Colors: {report.colorsCount}</Muted>
+            </Text>
 
-      {report && (
-        <Fragment>
-          <VerticalSpace space="large" />
+            {/* <Text>Количество шрифтов: {report.fontsCount}</Text>
+            <Text>Количество изображений: {report.imagesCount}</Text> */}
+          </div>
+        )}
+      </section>
 
-          <Text>Количество цветов: {report.colorsCount}</Text>
-
-          {/* Закомментировано до реализации поддержки шрифтов и изображений
-          <VerticalSpace space="small" />
-          <Text>Количество шрифтов: {report.fontsCount}</Text>
-          <Text>Количество изображений: {report.imagesCount}</Text>
-          */}
-        </Fragment>
-      )}
-
-      <VerticalSpace space="large" />
-
-      <Columns space="extraSmall">
-        <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid}>
-          Создать Units
-        </Button>
-      </Columns>
-
-      <VerticalSpace space="small" />
-    </Container>
+      <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid}>
+        Import elements
+      </Button>
+    </main>
   )
 }
 

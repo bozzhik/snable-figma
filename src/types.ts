@@ -1,9 +1,8 @@
 import {EventHandler} from '@create-figma-plugin/utilities'
 
-export type ColorUnit = {
-  value: string
-  isContrasted: boolean
-}
+export type Snabled = {title: string; url: string}
+
+export type ColorUnit = {value: string; isContrasted: boolean}
 
 export type Units = {
   colors?: ColorUnit[]
@@ -13,6 +12,7 @@ export type Units = {
 
 export type PluginData = {
   version: string
+  snabled: Snabled
   units: Units
 }
 
