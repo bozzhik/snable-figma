@@ -1,10 +1,10 @@
 import {CloseHandler, CreateUnitsHandler, PluginData} from './types'
-import {hexToRgb} from './utils'
+import {hexToRgb, getFontWeight} from './utils'
 
 import {once, showUI} from '@create-figma-plugin/utilities'
 
 export default function () {
-  once<CreateUnitsHandler>('CREATE_UNITS', function (data: PluginData) {
+  once<CreateUnitsHandler>('CREATE_UNITS', async function (data: PluginData) {
     // Создаем основной фрейм
     const mainFrame = figma.createFrame()
     mainFrame.name = `[${data.snabled.title}] ${data.snabled.url}`
@@ -59,8 +59,61 @@ export default function () {
       mainFrame.appendChild(colorsFrame)
     }
 
-    // Здесь в будущем можно добавить обработку шрифтов и изображений
-    // if (data.units.fonts) { ... }
+    // After colors section
+    if (data.units.fonts?.length) {
+      const fontsFrame = figma.createFrame()
+      fontsFrame.name = 'Fonts'
+      fontsFrame.layoutMode = 'VERTICAL'
+      fontsFrame.itemSpacing = 16
+      fontsFrame.paddingLeft = fontsFrame.paddingRight = fontsFrame.paddingTop = fontsFrame.paddingBottom = 16
+      fontsFrame.fills = []
+      fontsFrame.primaryAxisSizingMode = 'AUTO'
+      fontsFrame.counterAxisSizingMode = 'AUTO'
+
+      // Load Inter font first as fallback
+      await figma.loadFontAsync({family: 'Inter', style: 'Regular'})
+
+      for (const font of data.units.fonts) {
+        const text = figma.createText()
+        text.fontSize = 60
+
+        // Normalize font name - capitalize each word
+        const normalizedFontName = font.font
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ')
+
+        text.name = normalizedFontName
+
+        // Try different font styles in order of preference
+        const fontStyles = ['Regular', 'Book', 'Roman', 'Medium', 'Normal']
+        let fontLoaded = false
+
+        for (const style of fontStyles) {
+          try {
+            await figma.loadFontAsync({family: normalizedFontName, style})
+            text.fontName = {family: normalizedFontName, style}
+            fontLoaded = true
+            break
+          } catch (e) {
+            continue
+          }
+        }
+
+        if (!fontLoaded) {
+          text.fontName = {family: 'Inter', style: 'Regular'}
+        }
+
+        // Format weights using getFontWeight
+        const formattedWeights = font.weights.map((weight) => getFontWeight(weight)).join(', ')
+
+        // Set text after font is loaded
+        text.characters = `${normalizedFontName} (${formattedWeights})`
+        fontsFrame.appendChild(text)
+      }
+
+      mainFrame.appendChild(fontsFrame)
+    }
     // if (data.units.images) { ... }
 
     // Добавляем основной фрейм на страницу и центрируем его

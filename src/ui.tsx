@@ -80,15 +80,22 @@ function Plugin() {
         {error && <Text className="text-red-500 leading-none">{error}</Text>}
 
         {report && (
-          <div className="space-y-1.5">
-            <div className="text-lg font-medium">{report.snabled.title}</div>
+          <div className="space-y-2.5">
+            <div className="text-sm font-medium leading-[1.2] line-clamp-1">{report.snabled.title}</div>
 
-            <Text>
-              <Muted>Colors: {report.colorsCount}</Muted>
-            </Text>
+            <div className="flex gap-2.5">
+              {report.colorsCount && (
+                <Text>
+                  <Muted>Colors: {report.colorsCount}</Muted>
+                </Text>
+              )}
 
-            {/* <Text>Количество шрифтов: {report.fontsCount}</Text>
-            <Text>Количество изображений: {report.imagesCount}</Text> */}
+              {report.fontsCount && (
+                <Text>
+                  <Muted>Fonts: {report.fontsCount}</Muted>
+                </Text>
+              )}
+            </div>
           </div>
         )}
       </section>

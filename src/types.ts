@@ -2,11 +2,12 @@ import {EventHandler} from '@create-figma-plugin/utilities'
 
 export type Snabled = {title: string; url: string}
 
+export type FontsUnit = {font: string; weights: string[]}
 export type ColorUnit = {value: string; isContrasted: boolean}
 
 export type Units = {
+  fonts?: FontsUnit[]
   colors?: ColorUnit[]
-  fonts?: any[] // Подготовка для будущего расширения
   images?: any[] // Подготовка для будущего расширения
 }
 
