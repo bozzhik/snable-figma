@@ -15,12 +15,18 @@
     "watch": "build-figma-plugin --typecheck --watch"
   },
   "figma-plugin": {
+    "name": "Snable Figma Plugin",
+    "id": "1507707678099986490",
+    "main": "src/main.ts",
+    "ui": "src/ui.tsx",
+    "documentAccess": "dynamic-page",
+    "networkAccess": {
+      "allowedDomains": [
+        "none"
+      ]
+    },
     "editorType": [
       "figma"
-    ],
-    "id": "snable-figma-plugin",
-    "name": "Snable Figma Plugin",
-    "main": "src/main.ts",
-    "ui": "src/ui.tsx"
+    ]
   }
 }
