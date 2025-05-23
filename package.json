@@ -8,11 +8,17 @@
     "@create-figma-plugin/build": "^4.0.1",
     "@create-figma-plugin/tsconfig": "^4.0.1",
     "@figma/plugin-typings": "1.109.0",
+    "concurrently": ">=8",
+    "tailwindcss": ">=4",
     "typescript": ">=5"
   },
   "scripts": {
-    "build": "build-figma-plugin --typecheck --minify",
-    "watch": "build-figma-plugin --typecheck --watch"
+    "build": "pnpm run build:css && pnpm run build:js",
+    "build:css": "npx @tailwindcss/cli --input ./src/input.css --output ./src/output.css",
+    "build:js": "build-figma-plugin --typecheck --minify",
+    "watch": "pnpm run build:css && concurrently pnpm:watch:css pnpm:watch:js",
+    "watch:css": "npx @tailwindcss/cli --input ./src/input.css --output ./src/output.css --watch",
+    "watch:js": "build-figma-plugin --typecheck --watch"
   },
   "figma-plugin": {
     "name": "Snable Figma Plugin",

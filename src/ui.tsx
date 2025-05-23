@@ -1,3 +1,5 @@
+import '!./output.css'
+
 import {h, Fragment} from 'preact'
 import {useCallback, useState} from 'preact/hooks'
 
