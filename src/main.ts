@@ -114,7 +114,82 @@ export default function () {
 
       mainFrame.appendChild(fontsFrame)
     }
-    // if (data.units.images) { ... }
+    // Handle images
+    // if (data.units.images?.length) {
+    //   const imagesFrame = figma.createFrame()
+    //   imagesFrame.name = 'Images'
+    //   imagesFrame.layoutMode = 'VERTICAL'
+    //   imagesFrame.itemSpacing = 16
+    //   imagesFrame.paddingLeft = imagesFrame.paddingRight = imagesFrame.paddingTop = imagesFrame.paddingBottom = 16
+    //   imagesFrame.fills = []
+    //   imagesFrame.primaryAxisSizingMode = 'AUTO'
+    //   imagesFrame.counterAxisSizingMode = 'AUTO'
+
+    //   for (const image of data.units.images) {
+    //     try {
+    //       // Create a placeholder rectangle first
+    //       const rect = figma.createRectangle()
+    //       rect.name = image.name || 'Image'
+
+    //       // Set size based on type
+    //       if (image.type === 'icon') {
+    //         rect.resize(48, 48)
+    //       } else if (image.type === 'bg-image') {
+    //         rect.resize(400, 200)
+    //       } else {
+    //         rect.resize(300, 200)
+    //       }
+
+    //       // For SVGs and blob URLs, use a placeholder fill
+    //       if (image.src.startsWith('blob:') || image.src.endsWith('.svg')) {
+    //         rect.fills = [{
+    //           type: 'SOLID',
+    //           color: { r: 0.9, g: 0.9, b: 0.9 }
+    //         }]
+    //       } else {
+    //         // For regular images, try to load them
+    //         try {
+    //           const bytes = await fetch(image.src)
+    //             .then(response => response.arrayBuffer())
+    //             .then(buffer => new Uint8Array(buffer))
+
+    //           const imageHash = await figma.createImage(bytes)
+    //           rect.fills = [{
+    //             type: 'IMAGE',
+    //             imageHash: imageHash.hash,
+    //             scaleMode: 'FILL'
+    //           }]
+    //         } catch (imageError) {
+    //           // If image loading fails, use a placeholder fill
+    //           rect.fills = [{
+    //             type: 'SOLID',
+    //             color: { r: 0.9, g: 0.9, b: 0.9 }
+    //           }]
+
+    //           // Add a text label indicating the error
+    //           const errorText = figma.createText()
+    //           await figma.loadFontAsync({ family: "Inter", style: "Regular" })
+    //           errorText.fontSize = 10
+    //           errorText.characters = "Failed to load image"
+    //           errorText.textAlignHorizontal = 'CENTER'
+    //           errorText.x = rect.x + (rect.width - errorText.width) / 2
+    //           errorText.y = rect.y + (rect.height - errorText.height) / 2
+
+    //           // Group the rectangle and error text
+    //           const group = figma.group([rect, errorText], imagesFrame)
+    //           group.name = image.name || 'Failed Image'
+    //           continue
+    //         }
+    //       }
+
+    //       imagesFrame.appendChild(rect)
+    //     } catch (error) {
+    //       console.error(`Failed to process image: ${image.src}`, error)
+    //     }
+    //   }
+
+    //   mainFrame.appendChild(imagesFrame)
+    // }
 
     // Добавляем основной фрейм на страницу и центрируем его
     figma.currentPage.appendChild(mainFrame)

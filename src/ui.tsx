@@ -11,14 +11,14 @@ import {emit} from '@create-figma-plugin/utilities'
 function Plugin() {
   const [jsonData, setJsonData] = useState<string>('')
   const [isValid, setIsValid] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
   const [report, setReport] = useState<{
     version: string
     snabled: Snabled
+    fontsCount: number
     colorsCount: number
-    // Подготовлено для будущего расширения
-    fontsCount?: number
-    imagesCount?: number
+    // imagesCount: number
   } | null>(null)
 
   const validateJson = (text: string): boolean => {
@@ -36,7 +36,7 @@ function Plugin() {
         colorsCount: data.units.colors?.length || 0,
         // Подготовлено для будущего расширения
         fontsCount: data.units.fonts?.length || 0,
-        imagesCount: data.units.images?.length || 0,
+        // imagesCount: data.units.images?.length || 0,
       })
 
       setError('')
@@ -54,10 +54,15 @@ function Plugin() {
   }, [])
 
   const handleCreateButtonClick = useCallback(
-    function () {
+    async function () {
       if (isValid) {
-        const data = JSON.parse(jsonData) as PluginData
-        emit<CreateUnitsHandler>('CREATE_UNITS', data)
+        setLoading(true)
+        try {
+          const data = JSON.parse(jsonData) as PluginData
+          await emit<CreateUnitsHandler>('CREATE_UNITS', data)
+        } finally {
+          setLoading(false)
+        }
       }
     },
     [jsonData, isValid],
@@ -84,23 +89,29 @@ function Plugin() {
             <div className="text-sm font-medium leading-[1.2] line-clamp-1">{report.snabled.title}</div>
 
             <div className="flex gap-2.5">
-              {report.colorsCount && (
+              {report.colorsCount > 0 && (
                 <Text>
                   <Muted>Colors: {report.colorsCount}</Muted>
                 </Text>
               )}
 
-              {report.fontsCount && (
+              {report.fontsCount > 0 && (
                 <Text>
                   <Muted>Fonts: {report.fontsCount}</Muted>
                 </Text>
               )}
+
+              {/* {report.imagesCount > 0 && (
+                <Text>
+                  <Muted>Images: {report.imagesCount}</Muted>
+                </Text>
+              )} */}
             </div>
           </div>
         )}
       </section>
 
-      <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid}>
+      <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid} loading={loading}>
         Import elements
       </Button>
     </main>
