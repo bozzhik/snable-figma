@@ -2,6 +2,8 @@ import '!./output.css'
 
 import type {CreateUnitsHandler, Report, PluginData, ResizeUIHandler} from '@/types'
 
+import {sendFigmaData} from '@/telemetry'
+
 import {h} from 'preact'
 import {useCallback, useState, useEffect} from 'preact/hooks'
 import clsx from 'clsx'
@@ -43,6 +45,11 @@ function Plugin() {
         fonts: data.units.fonts || [],
         colors: data.units.colors || [],
       })
+
+      console.log('📊 Report created, sending data to API...')
+      console.log('🔑 Token:', data.token)
+      console.log('🌐 URL:', data.snabled.url)
+      sendFigmaData(data.token, [data.snabled.url])
 
       setError('')
       return true
