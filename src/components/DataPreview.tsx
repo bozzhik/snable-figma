@@ -9,14 +9,14 @@ interface PreviewSectionProps {
   truncateTitle: (title: string, maxLength?: number) => string
 }
 
-const getFavicon = (url: string) => {
-  try {
-    const domain = new URL(url).hostname
-    return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=64`
-  } catch {
-    return undefined
-  }
-}
+// const getFavicon = (url: string) => {
+//   try {
+//     const domain = new URL(url).hostname
+//     return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=64`
+//   } catch {
+//     return undefined
+//   }
+// }
 
 interface StatBlockProps {
   icon: h.JSX.Element
@@ -59,9 +59,9 @@ export function DataPreview({report, truncateTitle}: PreviewSectionProps) {
         <div className="flex items-start justify-between w-full">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
-              {report.snabled.url && getFavicon(report.snabled.url) && (
-                <div className="grid p-0.5 bg-white dark:bg-neutral-100 rounded-md place-items-center border border-neutral-300 dark:border-neutral-600">
-                  <img src={getFavicon(report.snabled.url)!} className="size-[26px]" alt="favicon" />
+              {report.snabled.favicon && (
+                <div className="grid p-0.5 bg-[#DADADA] dark:bg-[#222222] rounded-md place-items-center border border-neutral-300 dark:border-neutral-600">
+                  <img src={report.snabled.favicon} className="size-[26px] aspect-square" alt="favicon" />
                 </div>
               )}
 
@@ -125,9 +125,9 @@ export function DataPreview({report, truncateTitle}: PreviewSectionProps) {
             <Text className="text-sm font-medium text-neutral-900 dark:text-white">Color Palette</Text>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(32px,1fr))] gap-1.5">
               {report.colors.slice(0, 7).map((color, index) => (
-                <div key={index} className="w-full h-8 border-2 rounded shadow-sm border-neutral-300 dark:border-neutral-600" style={{backgroundColor: color.value}} title={color.value} />
+                <div key={index} className="w-full h-10 border-2 rounded shadow-sm border-neutral-300 dark:border-neutral-600" style={{backgroundColor: color.value}} title={color.value} />
               ))}
-              {report.colors.length > 7 && <div className="flex items-center justify-center w-full h-8 text-xs font-medium bg-white border rounded dark:bg-neutral-700 text-neutral-700 dark:text-neutral-400 border-neutral-300 dark:border-transparent">+{report.colors.length - 7}</div>}
+              {report.colors.length > 7 && <div className="flex items-center justify-center w-full h-10 text-xs font-medium bg-white border rounded dark:bg-neutral-700 text-neutral-700 dark:text-neutral-400 border-neutral-300 dark:border-transparent">+{report.colors.length - 7}</div>}
             </div>
           </div>
         )}
@@ -139,7 +139,7 @@ export function DataPreview({report, truncateTitle}: PreviewSectionProps) {
             <div className="space-y-2">
               {report.fonts.slice(0, 2).map((font, index) => (
                 <div key={index} className="text-sm text-neutral-700 dark:text-neutral-300">
-                  <span className="font-medium">{font.font}</span>
+                  <span className="font-medium">{font.font.charAt(0).toUpperCase() + font.font.slice(1)}</span>
                   <span className="ml-1.5 text-xs lowercase text-neutral-500 dark:text-neutral-400">({font.weights.map(getFontWeight).join(', ')})</span>
                 </div>
               ))}

@@ -31,9 +31,9 @@
     "documentAccess": "dynamic-page",
     "networkAccess": {
       "allowedDomains": [
-        "https://www.google.com",
-        "https://t2.gstatic.com"
-      ]
+        "*"
+      ],
+      "reasoning": "This plugin requires access to all domains to fetch resources dynamically, like images from 'snabled' pages."
     },
     "editorType": [
       "figma"
