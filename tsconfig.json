@@ -3,7 +3,12 @@
   "compilerOptions": {
     "typeRoots": ["node_modules/@figma", "node_modules/@types"],
     "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "jsxFragmentFactory": "Fragment",
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

@@ -2,22 +2,25 @@
   "dependencies": {
     "@create-figma-plugin/ui": "^4.0.1",
     "@create-figma-plugin/utilities": "^4.0.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.525.0",
     "preact": ">=10"
   },
   "devDependencies": {
     "@create-figma-plugin/build": "^4.0.1",
     "@create-figma-plugin/tsconfig": "^4.0.1",
     "@figma/plugin-typings": "1.109.0",
+    "@types/react": "^19.1.8",
     "concurrently": ">=8",
     "tailwindcss": ">=4",
     "typescript": ">=5"
   },
   "scripts": {
     "build": "pnpm run build:css && pnpm run build:js",
-    "build:css": "npx @tailwindcss/cli --input ./src/input.css --output ./src/output.css",
+    "build:css": "npx @tailwindcss/cli --main ./src/main.css --output ./src/output.css",
     "build:js": "build-figma-plugin --typecheck --minify",
     "watch": "pnpm run build:css && concurrently pnpm:watch:css pnpm:watch:js",
-    "watch:css": "npx @tailwindcss/cli --input ./src/input.css --output ./src/output.css --watch",
+    "watch:css": "npx @tailwindcss/cli --main ./src/main.css --output ./src/output.css --watch",
     "watch:js": "build-figma-plugin --typecheck --watch"
   },
   "figma-plugin": {
@@ -28,7 +31,8 @@
     "documentAccess": "dynamic-page",
     "networkAccess": {
       "allowedDomains": [
-        "none"
+        "https://www.google.com",
+        "https://t2.gstatic.com"
       ]
     },
     "editorType": [

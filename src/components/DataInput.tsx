@@ -35,8 +35,8 @@ export function DataInput({jsonData, handleTextInput, error, report, handleReset
   return (
     <div className="relative flex flex-col flex-1 gap-3">
       {report && (
-        <div onClick={handleReset} className="absolute inset-0 z-20 flex items-center justify-center rounded-md cursor-pointer bg-neutral-100/70 dark:bg-neutral-900/70 group">
-          <div className="!px-2 !py-1 !bg-neutral-700 text-xs font-medium rounded-md text-white group-hover:bg-neutral-700/70 duration-200">Reset</div>
+        <div onClick={handleReset} className="absolute inset-0 z-20 flex items-center justify-center rounded-md cursor-pointer bg-neutral-100/50 dark:bg-neutral-900/70 group">
+          <div className="!px-2 !py-1 !bg-neutral-500/80 dark:!bg-neutral-700 text-xs font-medium rounded-md text-white group-hover:bg-neutral-700/70 duration-200">Reset</div>
         </div>
       )}
 

@@ -1,48 +1,53 @@
 import '!./output.css'
 
-import type {CreateUnitsHandler, PluginData, Snabled} from './types'
+import type {CreateUnitsHandler, Report, PluginData, ResizeUIHandler} from '@/types'
 
-import {h, Fragment} from 'preact'
-import {useCallback, useState} from 'preact/hooks'
+import {h} from 'preact'
+import {useCallback, useState, useEffect} from 'preact/hooks'
+import clsx from 'clsx'
 
-import {Button, render, Text, Muted, TextboxMultiline, useInitialFocus, Link} from '@create-figma-plugin/ui'
 import {emit} from '@create-figma-plugin/utilities'
+import {render, Button} from '@create-figma-plugin/ui'
+
+import {Header} from '@/components/Header'
+import {DataInput} from '@/components/DataInput'
+import {DataPreview} from '@/components/DataPreview'
 
 function Plugin() {
   const [jsonData, setJsonData] = useState<string>('')
   const [isValid, setIsValid] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
-  const [report, setReport] = useState<{
-    version: string
-    snabled: Snabled
-    fontsCount: number
-    colorsCount: number
-    // imagesCount: number
-  } | null>(null)
+  const [report, setReport] = useState<Report | null>(null)
+
+  useEffect(() => {
+    emit<ResizeUIHandler>('RESIZE_UI', report !== null)
+  }, [report])
 
   const validateJson = (text: string): boolean => {
     try {
       const data = JSON.parse(text)
       if (!data.version || !data.units) {
-        setError('Неверный формат JSON: отсутствуют обязательные поля')
+        setError('Invalid JSON structure')
         setReport(null)
         return false
       }
 
       setReport({
         version: data.version,
+        token: data.token,
         snabled: data.snabled,
         colorsCount: data.units.colors?.length || 0,
-        // Подготовлено для будущего расширения
         fontsCount: data.units.fonts?.length || 0,
-        // imagesCount: data.units.images?.length || 0,
+        imagesCount: data.units.images?.length || 0,
+        fonts: data.units.fonts || [],
+        colors: data.units.colors || [],
       })
 
       setError('')
       return true
     } catch (e) {
-      setError('Неверный JSON формат')
+      setError('Invalid JSON format')
       setReport(null)
       return false
     }
@@ -51,6 +56,14 @@ function Plugin() {
   const handleTextInput = useCallback((value: string) => {
     setJsonData(value)
     setIsValid(validateJson(value))
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setJsonData('')
+    setIsValid(false)
+    setLoading(false)
+    setError('')
+    setReport(null)
   }, [])
 
   const handleCreateButtonClick = useCallback(
@@ -68,52 +81,23 @@ function Plugin() {
     [jsonData, isValid],
   )
 
+  const truncateTitle = (title: string, maxLength: number = 30) => {
+    return title.length > maxLength ? title.substring(0, maxLength) + '...' : title
+  }
+
   return (
-    <main className="px-3 pt-3.5 py-3 flex flex-col justify-between h-full gap-3">
-      <section className="space-y-3.5">
-        <Text>
-          <Muted>
-            Paste copied data from{' '}
-            <Link href="https://snable.website/store" target="_blank">
-              Snable Extension
-            </Link>
-          </Muted>
-        </Text>
+    <main className="flex flex-col h-full overflow-y-auto bg-neutral-100 dark:bg-neutral-900">
+      <Header />
 
-        <TextboxMultiline {...useInitialFocus()} rows={5} onValueInput={handleTextInput} value={jsonData} placeholder="{ ... }" />
+      <div className="flex-1 px-3.5 !pb-3.5 flex flex-col space-y-3">
+        <DataInput jsonData={jsonData} handleTextInput={handleTextInput} error={error} report={report} handleReset={handleReset} />
 
-        {error && <Text className="text-red-500 leading-none">{error}</Text>}
+        {report && <DataPreview report={report} truncateTitle={truncateTitle} />}
 
-        {report && (
-          <div className="space-y-2.5">
-            <div className="text-sm font-medium leading-[1.2] line-clamp-1">{report.snabled.title}</div>
-
-            <div className="flex gap-2.5">
-              {report.colorsCount > 0 && (
-                <Text>
-                  <Muted>Colors: {report.colorsCount}</Muted>
-                </Text>
-              )}
-
-              {report.fontsCount > 0 && (
-                <Text>
-                  <Muted>Fonts: {report.fontsCount}</Muted>
-                </Text>
-              )}
-
-              {/* {report.imagesCount > 0 && (
-                <Text>
-                  <Muted>Images: {report.imagesCount}</Muted>
-                </Text>
-              )} */}
-            </div>
-          </div>
-        )}
-      </section>
-
-      <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid} loading={loading}>
-        Import elements
-      </Button>
+        <Button fullWidth onClick={handleCreateButtonClick} disabled={!isValid} loading={loading} className={clsx(isValid && '!bg-neutral-600 dark:!bg-neutral-100 !text-white dark:!text-black', '!font-medium')}>
+          Import elements
+        </Button>
+      </div>
     </main>
   )
 }
